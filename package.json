@@ -1,0 +1,13 @@
+{
+  "name": "digibee-academy-explorer",
+  "version": "1.0.0",
+  "description": "CSM tool to explore student progress in Digibee Academy via MCP",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
