@@ -7,59 +7,7 @@ const path = require('path');
 const PORT = process.env.PORT || 3001;
 const TARGET = process.env.MCP_ENDPOINT || 'https://test.godigibee.io/pipeline/digibee/v1/mcp-server-digibee-academy/mcp';
 
-let sessionId = null;
 let requestId = 1;
-
-// --- MCP Functions ---
-
-function initSession(callback) {
-  const initPayload = JSON.stringify({
-    jsonrpc: '2.0',
-    id: requestId++,
-    method: 'initialize',
-    params: {
-      protocolVersion: '2025-06-18',
-      capabilities: {},
-      clientInfo: { name: 'digibee-academy-explorer', version: '1.0.0' }
-    }
-  });
-
-  const url = new URL(TARGET);
-  const options = {
-    hostname: url.hostname,
-    path: url.pathname,
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Content-Length': Buffer.byteLength(initPayload),
-      'Accept': 'application/json, text/event-stream'
-    }
-  };
-
-  console.log('>> Initializing MCP session...');
-  console.log('>> Target:', TARGET);
-
-  const req = https.request(options, (res) => {
-    let data = '';
-    const sid = res.headers['mcp-session-id'];
-    if (sid) sessionId = sid;
-
-    res.on('data', chunk => data += chunk);
-    res.on('end', () => {
-      console.log('<< Init response:', res.statusCode);
-      console.log('<< Session ID:', sessionId);
-      callback(null, sessionId);
-    });
-  });
-
-  req.on('error', (err) => {
-    console.error('!! Init error:', err.message);
-    callback(err);
-  });
-
-  req.write(initPayload);
-  req.end();
-}
 
 function callTool(toolName, args, callback) {
   const mcpPayload = JSON.stringify({
@@ -79,10 +27,6 @@ function callTool(toolName, args, callback) {
     'Accept': 'application/json, text/event-stream'
   };
 
-  if (sessionId) {
-    headers['mcp-session-id'] = sessionId;
-  }
-
   const options = {
     hostname: url.hostname,
     path: url.pathname,
@@ -94,8 +38,6 @@ function callTool(toolName, args, callback) {
 
   const req = https.request(options, (res) => {
     let data = '';
-    const sid = res.headers['mcp-session-id'];
-    if (sid) sessionId = sid;
 
     res.on('data', chunk => data += chunk);
     res.on('end', () => {
@@ -219,30 +161,15 @@ const server = http.createServer((req, res) => {
       const toolName = input.tool || 'search_student';
       const args = input.arguments || input.args || {};
 
-      const doCall = () => {
-        callTool(toolName, args, (err, result) => {
-          if (err) {
-            res.writeHead(502, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ found: false, message: 'MCP connection error: ' + err.message }));
-            return;
-          }
-          res.writeHead(200, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify(result));
-        });
-      };
-
-      if (!sessionId) {
-        initSession((err) => {
-          if (err) {
-            res.writeHead(502, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ found: false, message: 'Failed to init MCP session: ' + err.message }));
-            return;
-          }
-          doCall();
-        });
-      } else {
-        doCall();
-      }
+      callTool(toolName, args, (err, result) => {
+        if (err) {
+          res.writeHead(502, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ found: false, message: 'MCP connection error: ' + err.message }));
+          return;
+        }
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result));
+      });
     });
     return;
   }
@@ -252,7 +179,6 @@ const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({
       status: 'ok',
-      session: sessionId ? 'active' : 'none',
       target: TARGET,
       tools: ['search_student', 'search_by_company']
     }));
