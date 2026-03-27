@@ -7,26 +7,26 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #08070e;
-    --surface: #110f1a;
-    --surface-hover: #1a1726;
-    --border: #221e30;
-    --border-focus: #7c3aed;
-    --text: #ede9f6;
-    --text-muted: #8b80a5;
-    --text-dim: #5a5073;
-    --accent: #7c3aed;
-    --accent-light: #a78bfa;
-    --accent-soft: rgba(124, 58, 237, 0.12);
-    --accent-glow: rgba(124, 58, 237, 0.25);
-    --green: #34d399;
-    --green-soft: rgba(52, 211, 153, 0.1);
-    --amber: #fbbf24;
-    --amber-soft: rgba(251, 191, 36, 0.1);
-    --red: #f87171;
-    --red-soft: rgba(248, 113, 113, 0.1);
-    --cyan: #22d3ee;
-    --cyan-soft: rgba(34, 211, 238, 0.1);
+    --bg: #ffffff;
+    --surface: #f5f5f7;
+    --surface-hover: #ebebef;
+    --border: #e0e0e4;
+    --border-focus: #7B2FF2;
+    --text: #1a1a1a;
+    --text-muted: #6b6b6b;
+    --text-dim: #9a9a9a;
+    --accent: #7B2FF2;
+    --accent-light: #9b5ff5;
+    --accent-soft: rgba(123, 47, 242, 0.08);
+    --accent-glow: rgba(123, 47, 242, 0.2);
+    --green: #00C853;
+    --green-soft: rgba(0, 200, 83, 0.08);
+    --amber: #FF8F00;
+    --amber-soft: rgba(255, 143, 0, 0.08);
+    --red: #E53935;
+    --red-soft: rgba(229, 57, 53, 0.08);
+    --cyan: #0091EA;
+    --cyan-soft: rgba(0, 145, 234, 0.08);
     --radius: 14px;
   }
 
@@ -60,8 +60,9 @@
     bottom: -1px;
     left: 0;
     right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--accent-glow), transparent);
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.4;
   }
 
   .header-left {
@@ -120,12 +121,10 @@
     border-radius: 50%;
     background: var(--red);
     transition: background 0.3s;
-    box-shadow: 0 0 6px var(--red);
   }
 
   .status-dot.connected {
     background: var(--green);
-    box-shadow: 0 0 6px var(--green);
   }
 
   /* Chat area */
@@ -143,6 +142,9 @@
   .chat-area::-webkit-scrollbar-thumb {
     background: var(--border);
     border-radius: 3px;
+  }
+  .chat-area::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
   }
 
   /* Welcome */
@@ -166,7 +168,7 @@
     font-size: 26px;
     font-weight: 800;
     letter-spacing: -0.5px;
-    background: linear-gradient(135deg, var(--text), var(--accent-light));
+    background: linear-gradient(135deg, var(--text), var(--accent));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     animation: floatIn 0.8s ease-out 0.1s both;
@@ -236,7 +238,7 @@
   }
 
   .message.assistant .message-avatar {
-    background: linear-gradient(135deg, var(--accent), #9333ea);
+    background: var(--accent);
     color: white;
   }
 
@@ -260,7 +262,7 @@
   }
 
   .message.user .message-content {
-    background: linear-gradient(135deg, var(--accent), #6d28d9);
+    background: var(--accent);
     color: white;
     border: none;
   }
@@ -307,7 +309,7 @@
   .typing span {
     width: 6px;
     height: 6px;
-    background: var(--accent-light);
+    background: var(--accent);
     border-radius: 50%;
     animation: bounce 1.4s infinite;
   }
@@ -331,7 +333,7 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, var(--accent-glow), transparent);
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
   }
 
   .input-wrapper {
@@ -366,13 +368,13 @@
 
   .send-btn {
     padding: 14px 22px;
-    background: linear-gradient(135deg, var(--accent), #6d28d9);
+    background: var(--accent);
     color: white;
     border: none;
     border-radius: var(--radius);
     font-family: inherit;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     transition: all 0.25s;
     display: flex;
@@ -462,6 +464,49 @@
     margin-bottom: 14px;
   }
 
+  /* Tool toggle */
+  .tool-toggle {
+    display: flex;
+    gap: 0;
+    max-width: 780px;
+    margin: 0 auto 10px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 3px;
+    width: fit-content;
+  }
+
+  .tool-toggle-btn {
+    padding: 8px 18px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tool-toggle-btn:hover {
+    color: var(--text);
+  }
+
+  .tool-toggle-btn.active {
+    background: var(--accent);
+    color: white;
+    box-shadow: 0 2px 8px var(--accent-glow);
+  }
+
+  .tool-toggle-btn .icon {
+    font-size: 14px;
+  }
+
   /* Animations */
   @keyframes floatIn {
     from { opacity: 0; transform: translateY(16px); }
@@ -494,7 +539,7 @@
 <!-- Header -->
 <div class="header">
   <div class="header-left">
-    <img src="/logo.png" alt="Digibee Academy" class="header-logo">
+    <img src="https://digibee.academy/wp-content/uploads/2022/12/Academy-Logo-1-2048x786.png" alt="Digibee Academy" class="header-logo">
     <div class="header-divider"></div>
     <div>
       <div class="header-title">CSM Explorer</div>
@@ -512,27 +557,35 @@
 <!-- Chat -->
 <div class="chat-area" id="chatArea">
   <div class="welcome" id="welcome">
-    <img src="/logo.png" alt="Digibee Academy" class="welcome-logo">
+    <img src="https://digibee.academy/wp-content/uploads/2022/12/Academy-Logo-1-2048x786.png" alt="Digibee Academy" class="welcome-logo">
     <h2>Academy CSM Explorer</h2>
     <p>Consulte o progresso dos alunos, matrículas por empresa e conclusão de cursos na Digibee Academy.</p>
     <div class="suggestions">
-      <button class="suggestion-chip" onclick="askSuggestion(this)">Como está o João Silva?</button>
-      <button class="suggestion-chip" onclick="askSuggestion(this)">Alunos da Acme Corp</button>
-      <button class="suggestion-chip" onclick="askSuggestion(this)">Buscar joao.silva@acme.com</button>
-      <button class="suggestion-chip" onclick="askSuggestion(this)">Progresso da empresa Acme</button>
+      <button class="suggestion-chip" onclick="switchAndAsk('search_student', 'Martin Embon')">Como está o João Silva?</button>
+      <button class="suggestion-chip" onclick="switchAndAsk('search_by_company', 'Acme')">Alunos da Acme Corp</button>
+      <button class="suggestion-chip" onclick="switchAndAsk('search_student', 'joao.silva@acme.com')">Buscar joao.silva@acme.com</button>
+      <button class="suggestion-chip" onclick="switchAndAsk('search_by_company', 'Acme')">Progresso da empresa Acme</button>
     </div>
   </div>
 </div>
 
 <!-- Input -->
 <div class="input-area">
+  <div class="tool-toggle" id="toolToggle">
+    <button class="tool-toggle-btn active" data-tool="search_student" onclick="selectTool(this)">
+      <span class="icon">👤</span> Buscar Aluno
+    </button>
+    <button class="tool-toggle-btn" data-tool="search_by_company" onclick="selectTool(this)">
+      <span class="icon">🏢</span> Buscar Empresa
+    </button>
+  </div>
   <div class="input-wrapper">
-    <input type="text" id="userInput" placeholder="Pergunte sobre um aluno ou empresa..." onkeydown="if(event.key==='Enter')sendMessage()" />
+    <input type="text" id="userInput" placeholder="Nome ou email do aluno..." onkeydown="if(event.key==='Enter')sendMessage()" />
     <button class="send-btn" id="sendBtn" onclick="sendMessage()">
       Enviar ➜
     </button>
   </div>
-  <div class="input-hint">Enter para enviar · Tools: search_student, search_by_company</div>
+  <div class="input-hint" id="inputHint">Enter para enviar · Buscando por aluno</div>
 </div>
 
 <!-- Debug -->
@@ -547,6 +600,25 @@
 <script>
   const API_ENDPOINT = '/api/query';
   let isLoading = false;
+  let selectedTool = 'search_student';
+
+  function selectTool(btn) {
+    document.querySelectorAll('.tool-toggle-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedTool = btn.dataset.tool;
+
+    const input = document.getElementById('userInput');
+    const hint = document.getElementById('inputHint');
+
+    if (selectedTool === 'search_student') {
+      input.placeholder = 'Nome ou email do aluno...';
+      hint.textContent = 'Enter para enviar · Buscando por aluno';
+    } else {
+      input.placeholder = 'Nome da empresa...';
+      hint.textContent = 'Enter para enviar · Buscando por empresa';
+    }
+    input.focus();
+  }
 
   function toggleDebug() {
     document.getElementById('debugPanel').classList.toggle('active');
@@ -562,31 +634,17 @@
     sendMessage();
   }
 
-  function detectTool(question) {
-    const q = question.toLowerCase();
-    // Company-related keywords
-    if (q.includes('company') || q.includes('empresa') || q.includes('students from') ||
-        q.includes('alunos da') || q.includes('equipe') || q.includes('team') ||
-        q.includes('company progress') || q.includes('institution')) {
-      return 'search_by_company';
-    }
-    // Default to student search
-    return 'search_student';
+  function switchAndAsk(tool, query) {
+    const btn = document.querySelector(`.tool-toggle-btn[data-tool="${tool}"]`);
+    if (btn) selectTool(btn);
+    document.getElementById('userInput').value = query;
+    sendMessage();
   }
 
-  function buildArgs(question, tool) {
+  function buildArgs(question) {
     const q = question.trim();
 
-    if (tool === 'search_by_company') {
-      // Try to extract company name
-      const patterns = [
-        /(?:students?\s+from|alunos?\s+d[aoe]s?|company\s+progress\s+for|empresa)\s+(.+)/i,
-        /(.+)/
-      ];
-      for (const p of patterns) {
-        const m = q.match(p);
-        if (m) return { company: m[1].trim() };
-      }
+    if (selectedTool === 'search_by_company') {
       return { company: q };
     }
 
@@ -594,17 +652,6 @@
     if (q.includes('@')) {
       return { email: q.match(/[\w.-]+@[\w.-]+/)?.[0] || q };
     }
-
-    // Try to extract name from natural language
-    const namePatterns = [
-      /(?:how is|como est[áa]|search|buscar|progress of|progresso d[oe])\s+(.+?)(?:\s+doing|\s*\?|$)/i,
-      /(.+)/
-    ];
-    for (const p of namePatterns) {
-      const m = q.match(p);
-      if (m) return { name: m[1].trim() };
-    }
-
     return { name: q };
   }
 
@@ -755,8 +802,8 @@
     addMessage('user', question);
     addTyping();
 
-    const tool = detectTool(question);
-    const args = buildArgs(question, tool);
+    const tool = selectedTool;
+    const args = buildArgs(question);
 
     const payload = { tool, args };
 
