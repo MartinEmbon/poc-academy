@@ -523,6 +523,131 @@
     30% { transform: translateY(-5px); }
   }
 
+  /* Confidentiality banner */
+  .conf-banner {
+    background: var(--red-soft);
+    border-bottom: 1px solid rgba(229, 57, 53, 0.2);
+    padding: 8px 28px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--red);
+    text-align: center;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .conf-banner .icon { font-size: 14px; }
+
+  /* Login gate */
+  .login-overlay {
+    position: fixed;
+    inset: 0;
+    background: #ffffff;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s;
+  }
+
+  .login-overlay.hidden { display: none; }
+
+  .login-box {
+    width: 400px;
+    max-width: 90vw;
+    text-align: center;
+    animation: floatIn 0.5s ease-out;
+  }
+
+  .login-box .login-logo {
+    height: 44px;
+    margin-bottom: 28px;
+  }
+
+  .login-box h2 {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 6px;
+    letter-spacing: -0.3px;
+  }
+
+  .login-box p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+
+  .login-box .login-field {
+    position: relative;
+    margin-bottom: 16px;
+  }
+
+  .login-box input {
+    width: 100%;
+    padding: 14px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    outline: none;
+    transition: all 0.25s;
+  }
+
+  .login-box input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  .login-box input::placeholder {
+    color: var(--text-dim);
+  }
+
+  .login-box .login-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+
+  .login-box .login-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px var(--accent-glow);
+  }
+
+  .login-error {
+    color: var(--red);
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 12px;
+    display: none;
+  }
+
+  .login-error.visible { display: block; }
+
+  .login-footer {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
   /* Responsive */
   @media (max-width: 640px) {
     .header { padding: 12px 16px; }
@@ -535,6 +660,29 @@
 </style>
 </head>
 <body>
+
+<!-- Login Gate -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <img src="https://digibee.academy/wp-content/uploads/2022/12/Academy-Logo-1-2048x786.png" alt="Digibee Academy" class="login-logo">
+    <h2>Acesso Restrito</h2>
+    <p>Esta ferramenta é de uso exclusivo para colaboradores da Digibee. Insira a senha de acesso para continuar.</p>
+    <div class="login-field">
+      <input type="password" id="loginPassword" placeholder="Senha de acesso..." onkeydown="if(event.key==='Enter')attemptLogin()" />
+    </div>
+    <button class="login-btn" onclick="attemptLogin()">Entrar</button>
+    <div class="login-error" id="loginError">Senha incorreta. Tente novamente.</div>
+    <div class="login-footer">
+      🔒 Em conformidade com a LGPD, os dados exibidos nesta ferramenta são confidenciais e de uso interno da Digibee.
+    </div>
+  </div>
+</div>
+
+<!-- Confidentiality Banner -->
+<div class="conf-banner">
+  <span class="icon">⚠️</span>
+  De acordo com a Lei Geral de Proteção de Dados (LGPD), as informações contidas nesta ferramenta são confidenciais e de uso exclusivo de colaboradores da Digibee. O compartilhamento externo é proibido e sujeito a consequências legais.
+</div>
 
 <!-- Header -->
 <div class="header">
@@ -557,7 +705,7 @@
 <!-- Chat -->
 <div class="chat-area" id="chatArea">
   <div class="welcome" id="welcome">
-    <img src="https://digibee.academy/wp-content/uploads/2022/12/Academy-Logo-1-2048x786.png" alt="Digibee Academy" class="welcome-logo">
+    <img src="/logo.png" alt="Digibee Academy" class="welcome-logo">
     <h2>Academy CSM Explorer</h2>
     <p>Consulte o progresso dos alunos, matrículas por empresa e conclusão de cursos na Digibee Academy.</p>
     <div class="suggestions">
@@ -598,6 +746,40 @@
 </div>
 
 <script>
+  // --- Login Gate ---
+  const ACCESS_HASH = '5a7d9b3e'; // simple hash of Digibee@2026
+
+  function simpleHash(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash |= 0;
+    }
+    return (hash >>> 0).toString(16).slice(0, 8);
+  }
+
+  function attemptLogin() {
+    const pwd = document.getElementById('loginPassword').value;
+    if (pwd === 'Digibee@2026') {
+      document.getElementById('loginOverlay').classList.add('hidden');
+      sessionStorage.setItem('dg_auth', 'true');
+      document.getElementById('userInput').focus();
+    } else {
+      document.getElementById('loginError').classList.add('visible');
+      document.getElementById('loginPassword').value = '';
+      document.getElementById('loginPassword').focus();
+      setTimeout(() => {
+        document.getElementById('loginError').classList.remove('visible');
+      }, 3000);
+    }
+  }
+
+  // Check if already authenticated in this session
+  if (sessionStorage.getItem('dg_auth') === 'true') {
+    document.getElementById('loginOverlay').classList.add('hidden');
+  }
+
   const API_ENDPOINT = '/api/query';
   let isLoading = false;
   let selectedTool = 'search_student';
